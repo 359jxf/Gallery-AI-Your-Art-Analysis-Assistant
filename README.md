@@ -2,9 +2,13 @@
 
 本项目是基于大模型和知识图谱构造的艺术绘画分析平台
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Neo4j-logo2024color.png/250px-Neo4j-logo2024color.png" alt="img" style="zoom:25%;" /><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/LangChain_Logo.svg/250px-LangChain_Logo.svg.png" alt="🦜️🔗, the parrot and chain emojis" style="zoom:50%;" /><img src="https://cdn.brandfetch.io/idiyFucwEQ/theme/dark/logo.svg?c=1dxbfHSJFAPEGdCLU4o5B" style="zoom:8%;" >
-
 ![forimage](assets/forimage.png)
+
+- **neo4j:** 我们在neo4j构建知识图谱
+
+- **langchain:** 使用langchain作为大模型框架
+
+- **streamlit:** 一个既美观灵活又便捷的快速网页搭建工具
 
 ## Introduction
 
@@ -14,7 +18,7 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
 
    ![languangeonly](assets/languangeonly.png)
 
-2. 多模态问答：上传作品图片和指令，得到详细的分析结果。具体内容见 [Gallery AI multimodal.pdf](Gallery AI multimodal.pdf) 
+2. 多模态问答：上传作品图片和指令，得到详细的分析结果。具体内容见 [Gallery AI multimodal.pdf](Gallery-AI-multimodal.pdf) 
 
 ## Realization
 
