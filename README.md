@@ -40,20 +40,20 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
 
 我们选择 **neo4j** 作为图数据库，图结构如下：
 
-```
-nodes:
- - Artwork
- - Artstyle
- - Category
- - Subject
- - Dimension
- 
-relationships:
- - :BELONGS_TO_CATEGORY
- - :BELONGS_TO_STYLE
- - :BELONGS_TO_SUBJECT
- - :HAS_LEVEL
-```
+| 节点类别  | 用途                       |
+| --------- | -------------------------- |
+| Artwork   | 保存作品的文件名和图像编码 |
+| Artstyle  | 可选的风格                 |
+| Category  | 可选的类别                 |
+| Subject   | 可选的主题                 |
+| Dimension | 审美维度                   |
+
+| 边类别               | 用途                             |
+| -------------------- | -------------------------------- |
+| :BELONGS_TO_CATEGORY | 作品所属的类别                   |
+| :BELONGS_TO_STYLE    | 作品所属的风格                   |
+| :BELONGS_TO_SUBJECT  | 作品所属的主题                   |
+| :HAS_LEVEL           | 作品在某个审美维度上的得分及原因 |
 
 可直接供导入的csv文件在  [csv](csv) 目录下
 
@@ -79,7 +79,7 @@ relationships:
 
 1. 安装环境
 
-   ```
+   ```shell
    git clone https://github.com/359jxf/Gallery-AI-Your-Art-Analysis-Assistant.git
    cd Gallery-AI-Your-Art-Analysis-Assistant
    conda create -n gallery
@@ -87,7 +87,68 @@ relationships:
    pip install -r requirements.txt
    ```
 
-2. 下载 **neo4j** 并构建图谱（上一节），修改程序中graph配置信息。其中Artwork.csv 需自己创建，包含的属性有 `id`,`filename`,`embedding`,`:LABEL`
+2. 下载 **neo4j** 并构建图谱：
+
+   1. 数据准备：所需数据已保存在  [csv](csv) 目录下，请放在你的neo4j下载目录的`import`文件夹下。其中`Artwork.csv` 需自己创建完整版（使用 [convert_embedding.py](tools/convert_embedding.py) ），因为`embedding`超出存储空间。
+
+   2. 在neo4j的bin目录开启neo4j服务
+
+      ```shell
+      ./neo4j windows-service install
+      ./neo4j start
+      # 重启时
+      # ./neo4j restart
+      ```
+
+      
+
+   3. 创建节点
+
+      ```cypher
+      LOAD CSV WITH HEADERS FROM 'file:///Artwork.csv' AS row CREATE (Artwork:Artwork {id: row.id, filename: row.filename, embedding: apoc.convert.fromJsonList(row.embedding)}) RETURN Artwork;
+      LOAD CSV WITH HEADERS FROM 'file:///Artstyle.csv' AS row CREATE (Artstyle:Artstyle {id: row.id}) RETURN Artstyle;
+      LOAD CSV WITH HEADERS FROM 'file:///Category.csv' AS row CREATE (Category:Category {id: row.id}) RETURN Category;
+      LOAD CSV WITH HEADERS FROM 'file:///Subject.csv' AS row CREATE (Subject:Subject {id: row.id}) RETURN Subject;
+      LOAD CSV WITH HEADERS FROM 'file:///AestheticDimension.csv' AS row CREATE (Dimension:Dimension {id: row.id}) RETURN Dimension;
+      ```
+
+      
+
+   4. 创建关系
+
+      ```cypher
+      LOAD CSV WITH HEADERS FROM 'file:///Artwork_CATEGORY.csv' AS row
+      MATCH (a:Artwork {id: row.artwork})
+      MATCH (b:Category {id: row.category})
+      MERGE (a)-[:BELONGS_TO_CATEGORY]->(b);
+      LOAD CSV WITH HEADERS FROM 'file:///Artwork_STYLE.csv' AS row
+      MATCH (a:Artwork {id: row.artwork})
+      MATCH (b:Artstyle {id: row.style})
+      MERGE (a)-[:BELONGS_TO_STYLE]->(b);
+      LOAD CSV WITH HEADERS FROM 'file:///Artwork_SUBJECT.csv' AS row
+      MATCH (a:Artwork {id: row.artwork})
+      MATCH (b:Subject {id: row.subject})
+      MERGE (a)-[:BELONGS_TO_SUBJECT]->(b);
+      LOAD CSV WITH HEADERS FROM 'file:///Artwork_DIMENSION.csv' AS row
+      MATCH (a:Artwork {id: row.artwork}) 
+      MATCH (b:Dimension {id: row.dimension})
+      MERGE (a)-[:HAS_LEVEL {
+        level: row.level,
+        reason: coalesce(row.reason, "")  
+      }]->(b);
+      ```
+
+      
+
+   5. 修改程序中graph配置信息
+
+      ```python
+      url=''
+      username=''
+      password=''
+      ```
+
+      
 
 3. 配置大模型API并存入 .env 文件夹，可根据实际情况修改模型
 
