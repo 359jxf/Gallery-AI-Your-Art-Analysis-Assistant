@@ -74,6 +74,7 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
 3. 将所有图片转为base64编码字符串，因为大模型API支持网络url和base64两种图片方式，我们目前在本地运行
 4. 对这些节点调用 **GraphCypherQAChain** 查询到维度得分和评论信息，大模型负责结构化返回这些信息
 5. 构建最终prompt，调用vllm解答
+6. 对查询到的相似图片，再调用 **GraphCypherQAChain** 从中筛选出评分较高的作为参考图片展示给用户
 
 ## Use
 
@@ -162,4 +163,7 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
    streamlit run frontend.py
    ```
 
+7. 新增：自定义模型GalleryGPT
+
+   开启模型服务后，将服务的端口放在`.env`里即可，新增了一个`client.py`测试服务调用
    
