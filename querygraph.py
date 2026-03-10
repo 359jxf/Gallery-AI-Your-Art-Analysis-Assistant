@@ -22,8 +22,9 @@ def queryImage(llm,graph,top_k=20,image_filenames=[]):
         filename_str = ", ".join(image_filenames)
         query = f"""
         Below are the filenames of the relevant works I want to query: {filename_str}. 
-        You need to query the scores of dimensions and the reasons in all HAS_LEVEL relationships they are involved in, 
-        and then return the results in the following JSON format:
+        You need to :
+        1. generate Cypher to query the scores of dimensions and the reasons in all HAS_LEVEL relationships they are involved in, 
+        2. return the results from knowledge graph in the following JSON format:
         [ 
             {{
                 "filename":"xxxx",
@@ -39,7 +40,7 @@ def queryImage(llm,graph,top_k=20,image_filenames=[]):
             }},
             ...
         ]
-        Note: You must only return JSON (do not include any extra text, comments, or formatting).
+        Note: you only need to return the json results without any explanation.
         """
         graph.refresh_schema()
         
@@ -52,6 +53,10 @@ def queryImage(llm,graph,top_k=20,image_filenames=[]):
         )
         res = chain.invoke({"query": query})
         kg=res['result']
-        return kg
+
+        # 假设kg是json数组
+        unique_filenames = list({item["filename"] for item in kg if "filename" in item})
+
+        return unique_filenames,kg
     else:
         print("No similar artworks found.Closed...")

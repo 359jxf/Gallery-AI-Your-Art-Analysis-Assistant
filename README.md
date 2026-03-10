@@ -91,7 +91,7 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
 
    1. 数据准备：所需数据已保存在  [csv](csv) 目录下，请放在你的neo4j下载目录的`import`文件夹下。其中`Artwork.csv` 需自己创建完整版（使用 [convert_embedding.py](tools/convert_embedding.py) ），因为`embedding`超出存储空间。
 
-   2. 在neo4j的bin目录开启neo4j服务
+   2. 在neo4j(我的在D盘)的bin目录开启neo4j服务
 
       ```shell
       ./neo4j windows-service install
@@ -99,7 +99,7 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
       # 重启时
       # ./neo4j restart
       ```
-
+      浏览器打开`http://localhost:7474`
       
 
    3. 创建节点
@@ -152,7 +152,7 @@ Gallery AI基于大模型的预备知识和专业艺术评论数据库，能对�
 
 3. 配置大模型API并存入 .env 文件夹，可根据实际情况修改模型
 
-4. 多模态问答会加载CLIP模型，请配置好加速器或镜像网站，或下载到本地
+4. 多模态问答会加载CLIP模型，请配置好加速器或镜像网站(`set HF_ENDPOINT=https://hf-mirror.com`)，或下载到本地
 
 5. 多模态问答需要数据库中图片，请下载好APDDv2数据集，放在images文件夹下
 
